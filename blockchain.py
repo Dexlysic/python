@@ -50,21 +50,31 @@ def verify_chain():
         block_index keeps track of the current block being checked, to allow checking of previous block
                     in the list.
     """
-    block_index = 0
+    # block_index = 0
     is_valid = True
-    for block in blockchain:
+    # range() function is used below as an alternative to 'incremental for loop' from other languages
+    for block_index in range(len(blockchain)):
         if block_index == 0:
-            # If start of blockchain, skip previous hash check by incrementing block_index and continuing
-            block_index += 1
             continue
-        elif block[0] == blockchain[block_index - 1]:
-            # If previous block matches current new block hash, return as valid blockchain transaction.
+        elif blockchain[block_index][0] == blockchain[block_index - 1]:
             is_valid = True
         else:
-            # If not, set validity to false and break from the loop.
             is_valid = False
             break
-        block_index += 1
+
+    # for block in blockchain:
+    #     if block_index == 0:
+    #         # If start of blockchain, skip previous hash check by incrementing block_index and continuing
+    #         block_index += 1
+    #         continue
+    #     elif block[0] == blockchain[block_index - 1]:
+    #         # If previous block matches current new block hash, return as valid blockchain transaction.
+    #         is_valid = True
+    #     else:
+    #         # If no match, set validity to false and break from the loop.
+    #         is_valid = False
+    #         break
+    #     block_index += 1
     return is_valid
 # return is_valid results in the verify_chain() function being assigned a boolean of True or False.
 
@@ -94,7 +104,7 @@ while waiting_for_input:
         print('Input was invalid.  Please pick a value from the list!')
     # 'if not' statement below checks the previously returned value assigned to verify_chain() function.
     if not verify_chain():
-        print('Invalid blockchain.  Security shutdown!')
+        print('Invalid changes to blockchain detected.  Security shutdown!')
         break
 else:
     print('Thank you for using DexCoin!')
