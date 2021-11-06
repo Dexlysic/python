@@ -1,5 +1,17 @@
 # Initialize the blockchain list.
-blockchain = []
+genesis_block = {
+    'previous_hash': '',
+    'index': 0,
+    'transactions': []
+}
+blockchain = [genesis_block]
+open_transactions = []
+owner = 'Nick'
+participants = {'Nick'}
+
+
+def hash_block(block):
+    return '-'.join([str(block[key]) for key in block])
 
 
 def get_last_block():
@@ -7,26 +19,44 @@ def get_last_block():
     if len(blockchain) < 1:
         return None
     return blockchain[-1]
-# "Implicit else case"  If blockchain is empty, None type is returned and function exits.
+# "Implicit else case"  If blockchain is empty, None type is returned and fn exits.
 # No need to put following return as an 'else' statement due to this functionality.
 
 
-def add_transaction(transaction_amount, last_transaction=['start.hash']):
+def add_transaction(recipient, sender=owner, amount=1.0):
     """Writes the new transaction amount and last block onto the existing blockchain
 
     Arguments:
-        transaction_amount: the amount that should be added.
-        last_transaction: the last blockchain transaction (default string marks beginning of blockchain)
+        sender: sender of the transaction
+        recipient: recipient of the transaction.
+        amount: The amount of the designated transaction. (default=1.0)
     """
-    if last_transaction == None:
-        last_transaction = ['start.hash']
-    blockchain.append([last_transaction, transaction_amount])
+    transaction = {'sender': sender,
+                   'recipient': recipient,
+                   'amount': amount
+                   }
+    open_transactions.append(transaction)
+    participants.add(sender)
+    participants.add(recipient)
+
+
+def mine_block():
+    last_block = blockchain[-1]
+    block_hash = hash_block(last_block)
+    block = {
+        'previous_hash': block_hash,
+        'index': len(blockchain),
+        'transactions': open_transactions
+    }
+    blockchain.append(block)
 
 
 def get_transaction_value():
     """ Returns user's desired transaction amount as a floating number """
     print('-' * 30)
-    return float(input("Please enter transaction amount: "))
+    tx_recipient = input('Enter the recipient: ')
+    tx_amount = float(input("Please enter transaction amount: "))
+    return (tx_recipient, tx_amount)
 
 
 def get_user_choice():
@@ -45,38 +75,17 @@ def print_blockchain_log():
 
 
 def verify_chain():
-    """ Verifies the integrity of the blockchain.
-
-        block_index keeps track of the current block being checked, to allow checking of previous block
-                    in the list.
-    """
-    # block_index = 0
-    is_valid = True
-    # range() function is used below as an alternative to 'incremental for loop' from other languages
-    for block_index in range(len(blockchain)):
-        if block_index == 0:
+    """ Verifies the integrity of the blockchain.  """
+    # Enumerate usage, uses tuples to extract the blocks of blockchain and assign an index.
+    for (index, block) in enumerate(blockchain):
+        # If on the genesis block (block 0), fn skips the check.
+        if index == 0:
             continue
-        elif blockchain[block_index][0] == blockchain[block_index - 1]:
-            is_valid = True
-        else:
-            is_valid = False
-            break
-
-    # for block in blockchain:
-    #     if block_index == 0:
-    #         # If start of blockchain, skip previous hash check by incrementing block_index and continuing
-    #         block_index += 1
-    #         continue
-    #     elif block[0] == blockchain[block_index - 1]:
-    #         # If previous block matches current new block hash, return as valid blockchain transaction.
-    #         is_valid = True
-    #     else:
-    #         # If no match, set validity to false and break from the loop.
-    #         is_valid = False
-    #         break
-    #     block_index += 1
-    return is_valid
-# return is_valid results in the verify_chain() function being assigned a boolean of True or False.
+        # hash_block fn dynamically checks 'current' previous hash to the new recalculated hash.
+        # If the check fails, the fn returns a 'False' boolean to indicate the blockchain is invalid.
+        if block['previous_hash'] != hash_block(blockchain[index - 1]):
+            return False
+    return True
 
 
 waiting_for_input = True
@@ -85,25 +94,38 @@ while waiting_for_input:
     print('-' * 30)
     print('Please choose:')
     print('1: Add a new transaction.')
-    print('2: Output the blockchain log.')
+    print('2: Mine a new block.')
+    print('3: Output the blockchain log.')
+    print('4: View list of blockchain users.')
     print('m: Attempt to manipulate the chain.')
     print('q: Quit.')
     print('-' * 30)
     user_choice = get_user_choice()
     if user_choice == '1':
-        tx_amount = get_transaction_value()
-        add_transaction(tx_amount, get_last_block())
+        tx_data = get_transaction_value()
+        recipient, amount = tx_data
+        add_transaction(recipient, amount=amount)
+        print(open_transactions)
     elif user_choice == '2':
+        mine_block()
+    elif user_choice == '3':
         print_blockchain_log()
+    elif user_choice == '4':
+        print(participants)
     elif user_choice == 'm':
         if len(blockchain) >= 1:
-            blockchain[0] = [2]
+            blockchain[0] = {
+                'previous_hash': '',
+                'index': 0,
+                'transactions': [{'sender': 'Chris', 'recipient': 'Max', 'amount': 100}]
+            }
     elif user_choice == 'q':
         waiting_for_input = False
     else:
         print('Input was invalid.  Please pick a value from the list!')
-    # 'if not' statement below checks the previously returned value assigned to verify_chain() function.
+    # 'if not' statement below checks the previously returned value assigned to verify_chain() fn.
     if not verify_chain():
+        print_blockchain_log()
         print('Invalid changes to blockchain detected.  Security shutdown!')
         break
 else:
