@@ -22,7 +22,7 @@ def create_new_hash(block):
 
 
 def get_balance(participant):
-    """ Stores transaction amount to tx_sender, for every transaction in the block 
+    """ Stores transaction amount for every transaction in the block 
         *IF* tx_sender is a participant. Checks for each block in the blockchain.
 
         :participant: Blockchain user whose balance is being checked.
@@ -104,7 +104,7 @@ def mine_block():
 
 
 def get_transaction_value():
-    """ Returns user's desired transaction amount as a floating number """
+    """ Returns user's desired transaction amount as a floating number. """
     print('-' * 30)
     tx_recipient = input('Enter the recipient: ')
     tx_amount = float(input("Please enter transaction amount: "))
@@ -118,7 +118,7 @@ def get_user_choice():
 
 
 def print_blockchain_log():
-    # Output blockchain list data to the console
+    """ Outputs each block separately upon request. """
     for block in blockchain:
         print('Outputting next block...')
         print(block)
@@ -140,8 +140,26 @@ def verify_chain():
     return True
 
 
+def verify_all_transactions():
+    """ Verifies ALL transactions on the blockchain.  
+        This check is performed each time a tx is added but this fn has been created to allow users to
+        manually check ALL blockchain transactions simulataneously in a manual check."""
+    # is_valid = True
+    # for tx in open_transactions:
+    #     if verify_transaction(tx):
+    #         is_valid = True
+    #     else:
+    #         is_valid = False
+    # return is_valid
+
+    # verify_transaction(tx) is run for every tx in open_transactions.  A list of booleans is created,
+    #   which is then checked by all() to return a single boolean value (if ALL tx are valid)
+    return all([verify_transaction(tx) for tx in open_transactions])
+
+
 waiting_for_input = True
 
+# Console menu & logic
 while waiting_for_input:
     print('-' * 30)
     print('Please choose:')
@@ -149,6 +167,7 @@ while waiting_for_input:
     print('2: Mine a new block.')
     print('3: Output the blockchain log.')
     print('4: View list of blockchain users.')
+    print('5: Verify all transactions.')
     print('m: Attempt to manipulate the chain.')
     print('q: Quit.')
     print('-' * 30)
@@ -168,6 +187,11 @@ while waiting_for_input:
         print_blockchain_log()
     elif user_choice == '4':
         print(participants)
+    elif user_choice == '5':
+        if verify_all_transactions():
+            print('All current transactions are valid.')
+        else:
+            print('Invalid transactions have been detected.')
     elif user_choice == 'm':
         if len(blockchain) >= 1:
             blockchain[0] = {
@@ -185,7 +209,7 @@ while waiting_for_input:
         print_blockchain_log()
         print('Invalid changes to blockchain detected.  Security shutdown!')
         break
-    print(get_balance('Nick'))
+    print('DexCoin Balance: ' + str(get_balance('Nick')))
 else:
     print('Thank you for using DexCoin!')
 
