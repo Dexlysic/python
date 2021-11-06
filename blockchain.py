@@ -66,7 +66,9 @@ def verify_chain():
 # return is_valid results in the verify_chain() function being assigned a boolean of True or False.
 
 
-while True:
+waiting_for_input = True
+
+while waiting_for_input:
     print('Please choose:')
     print('1: Add a new transaction.')
     print('2: Output the blockchain log.')
@@ -83,7 +85,7 @@ while True:
             blockchain[0] = [2]
     elif user_choice == 'q':
         print('Thank you for using DexCoin!')
-        break
+        waiting_for_input = False
     else:
         print('Input was invalid.  Please pick a value from the list!')
     # 'if not' statement below checks the previously returned value assigned to verify_chain() function.
