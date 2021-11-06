@@ -4,16 +4,22 @@ blockchain = []
 
 def get_last_block():
     """ Returns the contents of the last block in the blockchain """
+    if len(blockchain) < 1:
+        return None
     return blockchain[-1]
+# "Implicit else case"  If blockchain is empty, None type is returned and function exits.
+# No need to put following return as an 'else' statement due to this functionality.
 
 
-def add_value(transaction_amount, last_transaction=['chain-start']):
+def add_transaction(transaction_amount, last_transaction=['start.hash']):
     """Writes the new transaction amount and last block onto the existing blockchain
 
     Arguments:
         transaction_amount: the amount that should be added.
         last_transaction: the last blockchain transaction (default string marks beginning of blockchain)
     """
+    if last_transaction == None:
+        last_transaction = ['start.hash']
     blockchain.append([last_transaction, transaction_amount])
 
 
@@ -34,25 +40,27 @@ def print_blockchain_log():
         print(block)
 
 
-# User input (transaction amount) stored as variable 'tx_amount'
-tx_amount = get_transaction_value()
-# add_value() is called to store the new transaction into the blockchain.
-add_value(tx_amount)
-
 tx_amount = get_transaction_value()
 # Below is redundant use of keyword arguments (kwargs), simply for showing example of use.
-add_value(last_transaction=get_last_block(), transaction_amount=tx_amount)
+add_transaction(last_transaction=get_last_block(),
+                transaction_amount=tx_amount)
 
 while True:
     print('Please choose:')
     print('1: Add a new transaction.')
     print('2: Output the blockchain log.')
-    print('3: Exit.')
+    print('q: Quit.')
     user_choice = get_user_choice()
     if user_choice == '1':
         tx_amount = get_transaction_value()
-        add_value(tx_amount, get_last_block())
-    else:
+        add_transaction(tx_amount, get_last_block())
+    elif user_choice == '2':
         print_blockchain_log()
+    elif user_choice == 'q':
+        print('Thank you for using DexCoin!')
+        break
+    else:
+        print('Input was invalid.  Please pick a value from the list!')
+    print('Choice registered.')
 
-print('END OF BLOCKCHAIN RECORD.')
+print('Done.')
