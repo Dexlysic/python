@@ -25,6 +25,7 @@ def add_transaction(transaction_amount, last_transaction=['start.hash']):
 
 def get_transaction_value():
     """ Returns user's desired transaction amount as a floating number """
+    print('-' * 30)
     return float(input("Please enter transaction amount: "))
 
 
@@ -37,8 +38,10 @@ def get_user_choice():
 def print_blockchain_log():
     # Output blockchain list data to the console
     for block in blockchain:
-        print('Outputting new block...')
+        print('Outputting next block...')
         print(block)
+    else:
+        print('-' * 30)
 
 
 def verify_chain():
@@ -69,11 +72,13 @@ def verify_chain():
 waiting_for_input = True
 
 while waiting_for_input:
+    print('-' * 30)
     print('Please choose:')
     print('1: Add a new transaction.')
     print('2: Output the blockchain log.')
     print('m: Attempt to manipulate the chain.')
     print('q: Quit.')
+    print('-' * 30)
     user_choice = get_user_choice()
     if user_choice == '1':
         tx_amount = get_transaction_value()
@@ -84,7 +89,6 @@ while waiting_for_input:
         if len(blockchain) >= 1:
             blockchain[0] = [2]
     elif user_choice == 'q':
-        print('Thank you for using DexCoin!')
         waiting_for_input = False
     else:
         print('Input was invalid.  Please pick a value from the list!')
@@ -92,5 +96,7 @@ while waiting_for_input:
     if not verify_chain():
         print('Invalid blockchain.  Security shutdown!')
         break
+else:
+    print('Thank you for using DexCoin!')
 
 print('Done.')
