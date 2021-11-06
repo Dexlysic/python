@@ -29,6 +29,7 @@ def get_transaction_value():
 
 
 def get_user_choice():
+    """ Collects user input from the console interface """
     user_input = input('Your choice: ')
     return user_input
 
@@ -40,11 +41,36 @@ def print_blockchain_log():
         print(block)
 
 
+def verify_chain():
+    """ Verifies the integrity of the blockchain.
+
+        block_index keeps track of the current block being checked, to allow checking of previous block
+                    in the list.
+    """
+    block_index = 0
+    is_valid = True
+    for block in blockchain:
+        if block_index == 0:
+            # If start of blockchain, skip previous hash check by incrementing block_index and continuing
+            block_index += 1
+            continue
+        elif block[0] == blockchain[block_index - 1]:
+            # If previous block matches current new block hash, return as valid blockchain transaction.
+            is_valid = True
+        else:
+            # If not, set validity to false and break from the loop.
+            is_valid = False
+            break
+        block_index += 1
+    return is_valid
+# return is_valid results in the verify_chain() function being assigned a boolean of True or False.
+
+
 while True:
     print('Please choose:')
     print('1: Add a new transaction.')
     print('2: Output the blockchain log.')
-    print('h: Manipulate the chain.')
+    print('m: Attempt to manipulate the chain.')
     print('q: Quit.')
     user_choice = get_user_choice()
     if user_choice == '1':
@@ -52,7 +78,7 @@ while True:
         add_transaction(tx_amount, get_last_block())
     elif user_choice == '2':
         print_blockchain_log()
-    elif user_choice == 'h':
+    elif user_choice == 'm':
         if len(blockchain) >= 1:
             blockchain[0] = [2]
     elif user_choice == 'q':
@@ -60,6 +86,9 @@ while True:
         break
     else:
         print('Input was invalid.  Please pick a value from the list!')
-    print('Choice registered.')
+    # 'if not' statement below checks the previously returned value assigned to verify_chain() function.
+    if not verify_chain():
+        print('Invalid blockchain.  Security shutdown!')
+        break
 
 print('Done.')
