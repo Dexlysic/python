@@ -40,11 +40,6 @@ def print_blockchain_log():
         print(block)
 
 
-tx_amount = get_transaction_value()
-# Below is redundant use of keyword arguments (kwargs), simply for showing example of use.
-add_transaction(last_transaction=get_last_block(),
-                transaction_amount=tx_amount)
-
 while True:
     print('Please choose:')
     print('1: Add a new transaction.')
